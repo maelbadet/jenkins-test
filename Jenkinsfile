@@ -5,12 +5,6 @@ pipeline {
     GITHUB_CREDS = credentials('jenkins_token')  // Tes credentials Github dans Jenkins
   }
 
-  stage('Build Docker Image') {
-     steps {
-      sh 'docker build -t my-node-app .'
-     }
-   }
-
   stages {
     stage('Checkout') {
       steps {
@@ -41,6 +35,12 @@ pipeline {
           sh "git tag ${tag}"
           sh "git push origin ${tag}"
         }
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t my-node-app .'
       }
     }
   }
