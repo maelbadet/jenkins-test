@@ -11,8 +11,6 @@ pipeline {
         sh 'docker --version'
       }
     }
-  }
-  stages {
     stage('Checkout') {
       steps {
         git branch: 'main', credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
