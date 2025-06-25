@@ -1,8 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    docker { image 'node:18' }
+  }
 
   environment {
-    GITHUB_CREDS = credentials('jenkins_token')  // Tes credentials Github dans Jenkins
+    GITHUB_CREDS = credentials('jenkins_token')
   }
 
   stages {
