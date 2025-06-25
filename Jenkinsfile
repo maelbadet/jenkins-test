@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/my-node-app.git'
+        git credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
       }
     }
 
@@ -32,7 +32,7 @@ pipeline {
             git config user.email "maelbadet21@gmail.com"
             git config user.name "maelbadet"
             git tag -a ${tag} -m "Build ${env.BUILD_NUMBER}"
-            git push https://${GITHUB_CREDS_USR}:${GITHUB_CREDS_PSW}@github.com/maelbadet/my-node-app.git --tags
+            git push https://${GITHUB_CREDS_USR}:${GITHUB_CREDS_PSW}@github.com/maelbadet/jenkins-test.git --tags
           """
         }
       }
