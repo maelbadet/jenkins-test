@@ -1,11 +1,9 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:18'
-      args '-v $HOME/.npm:/root/.npm'
-      reuseNode true
-    }
-  }
+  agent any
+
+  steps {
+      sh 'docker build -t my-node-app .'
+   }
 
   environment {
     GITHUB_CREDS = credentials('jenkins_token')  // Tes credentials Github dans Jenkins
