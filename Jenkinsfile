@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'docker-enabled' }
+  agent any
 
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
@@ -12,12 +12,11 @@ pipeline {
       }
     }
 
-    // Étapes Node.js dans un container docker node:18
     stage('Install and Test') {
       agent {
         docker {
           image 'node:18'
-          args '-v $HOME/.npm:/root/.npm'  // optionnel, cache npm local
+          args '-v $HOME/.npm:/root/.npm'
         }
       }
       steps {
