@@ -11,6 +11,7 @@ pipeline {
         sh 'docker --version'
       }
     }
+
     stage('Checkout') {
       steps {
         git branch: 'main', credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
@@ -18,15 +19,13 @@ pipeline {
     }
 
     stage('Install and Test') {
-      agent {
-        docker {
-          image 'node:18'
-          args '-v $HOME/.npm:/root/.npm'
-        }
-      }
       steps {
-        sh 'npm install'
-        sh 'npm test'
+        script {
+          docker.image('node:18').inside('-v $HOME/.npm:/root/.npm') {
+            sh 'npm install'
+            sh 'npm test'
+          }
+        }
       }
     }
 
