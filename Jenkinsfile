@@ -1,50 +1,21 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    GITHUB_CREDS = credentials('jenkins_token')
-  }
-
-  stages {
-    stage('Test Docker') {
-      steps {
-        sh 'docker --version'
-      }
+    tools {
+        nodejs "NodeJS 24" // Tu dois avoir défini ce nom dans Jenkins -> Global Tool Configuration
     }
 
-    stage('Checkout') {
-      steps {
-        git branch: 'main', credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
-      }
-    }
-
-    stage('Install and Test') {
-      steps {
-        script {
-          docker.image('node:18').inside('-v $HOME/.npm:/root/.npm') {
-            sh 'npm install'
-            sh 'npm test'
-          }
+    stages {
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
         }
-      }
-    }
 
-    stage('Tag and Push') {
-      when { branch 'main' }
-      steps {
-        script {
-          def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-          def tag = "build-${commitHash}"
-          sh "git tag ${tag}"
-          sh "git push origin ${tag}"
+        stage('Run tests') {
+            steps {
+                sh 'npm test'
+            }
         }
-      }
     }
-
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t my-node-app .'
-      }
-    }
-  }
 }
