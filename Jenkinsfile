@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent { label 'docker-enabled' }
 
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
