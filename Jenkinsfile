@@ -1,9 +1,11 @@
 pipeline {
-  agent any
-
-  tools {
-    nodejs 'node18'
+  agent {
+    docker {
+      image 'node:18' // Tu peux changer par node:20 ou autre version
+      args '-v /root/.npm:/root/.npm' // Permet de réutiliser le cache
+    }
   }
+
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
   }
@@ -28,15 +30,15 @@ pipeline {
     }
 
     stage('Tag and Push') {
+      when {
+        branch 'main'
+      }
       steps {
         script {
-          def tag = "build-${env.BUILD_NUMBER}"
-          sh """
-            git config user.email "maelbadet21@gmail.com"
-            git config user.name "maelbadet"
-            git tag -a ${tag} -m "Build ${env.BUILD_NUMBER}"
-            git push https://${GITHUB_CREDS_USR}:${GITHUB_CREDS_PSW}@github.com/maelbadet/jenkins-test.git --tags
-          """
+          def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          def tag = "build-${commitHash}"
+          sh "git tag ${tag}"
+          sh "git push origin ${tag}"
         }
       }
     }
