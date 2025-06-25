@@ -1,13 +1,14 @@
 pipeline {
   agent {
     docker {
-      image 'node:18' // Tu peux changer par node:20 ou autre version
-      args '-v /root/.npm:/root/.npm' // Permet de réutiliser le cache
+      image 'node:18'
+      args '-v $HOME/.npm:/root/.npm'
+      reuseNode true
     }
   }
 
   environment {
-    GITHUB_CREDS = credentials('jenkins_token')
+    GITHUB_CREDS = credentials('jenkins_token')  // Tes credentials Github dans Jenkins
   }
 
   stages {
