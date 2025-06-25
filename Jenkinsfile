@@ -1,6 +1,9 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'node18'
+  }
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
   }
