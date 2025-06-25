@@ -1,7 +1,5 @@
 pipeline {
-  agent {
-    docker { image 'node:18' }
-  }
+  agent any  // machine Jenkins où Docker est installé
 
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
