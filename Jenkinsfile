@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
+        git branch: 'main', credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/jenkins-test.git'
       }
     }
 
