@@ -1,0 +1,14 @@
+{
+  "name": "my-node-app",
+  "version": "1.0.0",
+  "description": "Exemple d'application Node.js avec Jenkins et Docker",
+  "main": "src/sum.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Mael Badet",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
