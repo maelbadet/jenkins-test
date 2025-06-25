@@ -1,5 +1,5 @@
 pipeline {
-  agent any  // machine Jenkins où Docker est installé
+  agent any
 
   environment {
     GITHUB_CREDS = credentials('jenkins_token')
@@ -12,22 +12,22 @@ pipeline {
       }
     }
 
-    stage('Install Dependencies') {
+    // Étapes Node.js dans un container docker node:18
+    stage('Install and Test') {
+      agent {
+        docker {
+          image 'node:18'
+          args '-v $HOME/.npm:/root/.npm'  // optionnel, cache npm local
+        }
+      }
       steps {
         sh 'npm install'
-      }
-    }
-
-    stage('Run Tests') {
-      steps {
         sh 'npm test'
       }
     }
 
     stage('Tag and Push') {
-      when {
-        branch 'main'
-      }
+      when { branch 'main' }
       steps {
         script {
           def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
