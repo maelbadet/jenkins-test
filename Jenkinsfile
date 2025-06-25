@@ -2,13 +2,13 @@ pipeline {
   agent any
 
   environment {
-    GITHUB_CREDS = credentials('jenkins-token')
+    GITHUB_CREDS = credentials('jenkins_token')
   }
 
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'jenkins-token', url: 'https://github.com/maelbadet/my-node-app.git'
+        git credentialsId: 'jenkins_token', url: 'https://github.com/maelbadet/my-node-app.git'
       }
     }
 
