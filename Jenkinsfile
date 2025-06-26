@@ -10,13 +10,13 @@ pipeline {
     }
 
     tools {
-        nodejs "npm" // Doit être configuré dans Jenkins
+        nodejs "npm"
     }
 
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/maelbadet/jenkins-test.git', branch: 'main'
+                checkout scm
             }
         }
 
