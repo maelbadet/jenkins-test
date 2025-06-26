@@ -14,12 +14,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone') {
-            steps {
-                git url: 'https://github.com/maelbadet/jenkins-test.git', branch: 'main'
-            }
-        }
-
         stage('Install dependencies') {
             steps {
                 sh 'npm install'
