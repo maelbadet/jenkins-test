@@ -10,12 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Install dependencies') {
             steps {
                 sh 'npm install'
@@ -31,7 +25,7 @@ pipeline {
         stage('Tag Git repo') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'github-creds',
+                    credentialsId: 'jenkins_token', // 💡 Assure-toi que c'est bien l'ID dans Jenkins
                     usernameVariable: 'GIT_USERNAME',
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
