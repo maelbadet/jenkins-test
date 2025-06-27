@@ -183,3 +183,5 @@ les etapes du docker run :
 
 cette commande permet de resoudre le probleme de droit d'acces sur le script Jenkinsfile
 - jenkins-dind : nom de l'image utiliser
+
+test test
