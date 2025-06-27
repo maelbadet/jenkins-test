@@ -56,16 +56,10 @@ pipeline {
     }
 
     tools {
-        nodejs "npm" // Doit être configuré dans Jenkins > Tools
+        nodejs "npm"
     }
 
     stages {
-        stage('Clone') {
-            steps {
-                git url: 'https://github.com/maelbadet/jenkins-test.git', branch: 'main'
-            }
-        }
-
         stage('Install dependencies') {
             steps {
                 sh 'npm install'
@@ -105,7 +99,7 @@ pipeline {
         stage('Tag Git repo') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'github-creds',
+                    credentialsId: 'jenkins_token',
                     usernameVariable: 'GIT_USERNAME',
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
@@ -121,4 +115,71 @@ pipeline {
         }
     }
 }
+
 ```
+
+### etape par etape du Jenkisfile : 
+
+```groovy
+pipeline {
+    agent any
+```
+utilise n'importe quel agent Jenkins (sur un node ou un docker)
+
+```groovy
+environment {
+        GITHUB_USER = 'maelbadet'
+        IMAGE_NAME = "${GITHUB_USER}/jenkins-test"
+        REGISTRY = "ghcr.io"
+        VERSION = "v${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+    }
+```
+definit les variables utilsie tout au long de la pipeline :
+- GITHUB_USER : mon user de connexion github
+- IMAGE_NAME : construit le nom de l'image Docker maelbadet/jenkins-test
+- REGISTRY : centralise les informations pour les futurs commandes docker dans la pipeline
+- VERSION : tag de version, elle est fournis automatiquement par jenkins lors de chaque pipeline (la version evite les collisions d'images)
+- DOCKER_IMAGE : Assemble toutes les parties précédentes pour former l’identifiant complet de l’image Docker
+
+```groovy
+    tools {
+        nodejs "npm"
+    }
+```
+utilise la version node que j'ai declarer `npm` dans la conf jenkins
+
+la `stages` englobe toutes les etapes de la pipeline CI/CD : 
+- installer les dependences
+- executer les tests
+- construire une image docker
+- conexion au docker container registry
+- envoie de l'image docker dans le github container registry
+- creer un tag pour la pipeline
+
+### lancer le container jenkins
+
+pour lancer le container jenkins, j'ai besoin de la commande :
+```bash
+docker run -d \
+  --name jenkins-docker \
+  -p 8080:8080 -p 50000:50000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v jenkins_home:/var/jenkins_home \
+  --group-add=$(getent group docker | cut -d: -f3) \
+  jenkins-dind
+
+```
+les etapes du docker run : 
+- -d : lance en mode detacher (sans les logs)
+- --name : donne le nom jenkins-docker au container
+- -p 8080:8080 -p 50000:50000 : attribue les ports respectif pour lancer jenkins
+- -v /var/run/docker.sock:/var/run/docker.sock : monte le socket docker sur le container (permet d'executer les commandes docker dans un script CI/CD)
+- -v jenkins_home:/var/jenkins_home : creer un volume pour si le /var/jenkins_home est supprimer
+- --group-add= : ajoute le container au gorupe docker de l'hote
+  - $(getent group docker | cut -d: -f3)
+  - getent group docker : cherche le groupe docker sur le system
+  - cut -d: -f3 : recupere l'id du groupe
+
+cette commande permet de resoudre le probleme de droit d'acces sur le script Jenkinsfile
+- jenkins-dind : nom de l'image utiliser
